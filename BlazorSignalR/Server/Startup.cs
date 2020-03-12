@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
 using BlazorSignalR.Server.Hubs;
+using BlazorSignalR.Server.Services;
 
 namespace BlazorSignalR.Server
 {
@@ -17,6 +18,8 @@ namespace BlazorSignalR.Server
             services.AddMvc();
             services.AddSignalR()
                 .AddMessagePackProtocol();
+
+            services.AddSingleton<WeatherForecastService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,7 +40,7 @@ namespace BlazorSignalR.Server
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapHub<ChatHub>("/chatHub");
+                endpoints.MapHub<AppHub>("/appHub");
                 endpoints.MapFallbackToFile("index.html");
             });
         }

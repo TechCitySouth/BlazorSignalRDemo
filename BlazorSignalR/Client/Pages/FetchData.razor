@@ -1,6 +1,7 @@
 ﻿@page "/fetchdata"
 @using BlazorSignalR.Shared
-@inject HttpClient Http
+@*@inject HttpClient Http*@
+@inject HubConnection HubConnection
 
 <h1>Weather forecast</h1>
 
@@ -40,7 +41,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetJsonAsync<WeatherForecast[]>("WeatherForecast");
+        forecasts = await HubConnection.InvokeAsync<WeatherForecast[]>("GetWeather");
     }
 
 }

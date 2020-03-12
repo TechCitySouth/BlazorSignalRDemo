@@ -1,9 +1,9 @@
-﻿@page "/chat"
-@using Microsoft.AspNetCore.SignalR.Client
+﻿@implements IDisposable
+@page "/chat"
 @using Microsoft.Extensions.DependencyInjection
 @using BlazorSignalR.Shared;
 @using MessagePack;
-@inject NavigationManager NavigationManager
+@inject HubConnection HubConnection
 
 <div class="form-group">
     <label>
@@ -29,32 +29,31 @@
 </ul>
 
 @code {
-    private HubConnection _hubConnection;
     private List<string> _messages = new List<string>();
     private string _userInput;
     private string _messageInput;
+    private IDisposable handler;
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri("/chatHub"))
-            .AddMessagePackProtocol()
-            .Build();
 
-        _hubConnection.On<string, string>("ReceiveMessage", (user, message) =>
+        handler = HubConnection.On<string, string>("ReceiveMessage", (user, message) =>
         {
             var encodedMsg = $"{user}: {message}";
             _messages.Add(encodedMsg);
             StateHasChanged();
         });
-
-        await _hubConnection.StartAsync();
     }
 
     Task Send() =>
-        _hubConnection.SendAsync("SendMessage", _userInput, _messageInput);
+        HubConnection.SendAsync("SendMessage", _userInput, _messageInput);
 
 
     public bool IsConnected =>
-        _hubConnection.State == HubConnectionState.Connected;
+        HubConnection.State == HubConnectionState.Connected;
+
+    public void Dispose()
+    {
+        handler.Dispose();
+    }
 }
