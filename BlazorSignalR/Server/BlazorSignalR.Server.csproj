@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MessagePack" Version="2.1.90" />
+    <PackageReference Include="MessagePack.AspNetCoreMvcFormatter" Version="2.1.90" />
+    <PackageReference Include="MessagePack.ImmutableCollection" Version="2.1.90" />
+    <PackageReference Include="MessagePackAnalyzer" Version="2.1.90" />
+    <PackageReference Include="Microsoft.AspNetCore.Blazor.Server" Version="3.2.0-preview1.20073.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Client\BlazorSignalR.Client.csproj" />
+    <ProjectReference Include="..\Shared\BlazorSignalR.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
+</Project>
