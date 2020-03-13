@@ -4,12 +4,4 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MessagePack" Version="2.1.90" />
-    <PackageReference Include="MessagePack.AspNetCoreMvcFormatter" Version="2.1.90" />
-    <PackageReference Include="MessagePack.ImmutableCollection" Version="2.1.90" />
-    <PackageReference Include="MessagePackAnalyzer" Version="2.1.90" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Protocols.MessagePack" Version="3.1.2" />
-  </ItemGroup>
-
 </Project>

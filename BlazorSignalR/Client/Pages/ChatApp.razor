@@ -1,19 +1,20 @@
-﻿@page "/chat"
-@using Microsoft.AspNetCore.SignalR.Client
-@using BlazorSignalR.Shared; 
+﻿@implements IDisposable
+@page "/chat"
+@using Microsoft.Extensions.DependencyInjection
+@using BlazorSignalR.Shared;
 @using MessagePack;
-@inject NavigationManager NavigationManager
+@inject HubConnection HubConnection
 
 <div class="form-group">
     <label>
         User:
-        <input @bind="_mymessage.user" />
+        <input @bind="_userInput" />
     </label>
 </div>
 <div class="form-group">
     <label>
         Message:
-        <input @bind="_mymessage.message" size="50" />
+        <input @bind="_messageInput" size="50" />
     </label>
 </div>
 <button @onclick="Send" disabled="@(!IsConnected)">Send</button>
@@ -28,36 +29,31 @@
 </ul>
 
 @code {
-    private HubConnection _hubConnection;
     private List<string> _messages = new List<string>();
+    private string _userInput;
+    private string _messageInput;
+    private IDisposable handler;
 
-    private MPClass.MyMessage _mymessage = new MPClass.MyMessage();
-    private byte[] msgpack;
-
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
-        _hubConnection = new HubConnectionBuilder()
-            .WithUrl(NavigationManager.ToAbsoluteUri("/chatHub"))
-            .Build();
 
-        _hubConnection.On<byte[]>("ReceiveMessage", (msgpack) =>
+        handler = HubConnection.On<string, string>("ReceiveMessage", (user, message) =>
         {
-            _mymessage = MessagePackSerializer.Deserialize<MPClass.MyMessage>(msgpack);
-            var encodedMsg = $"{_mymessage.user}: {_mymessage.message}";
+            var encodedMsg = $"{user}: {message}";
             _messages.Add(encodedMsg);
             StateHasChanged();
         });
-
-        await _hubConnection.StartAsync();
     }
 
-    protected async Task Send()
-    {
-        byte[] bytes = MessagePackSerializer.Serialize(_mymessage);
-        await _hubConnection.SendAsync("SendMessage", bytes);
-    }
+    Task Send() =>
+        HubConnection.SendAsync("SendMessage", _userInput, _messageInput);
 
 
     public bool IsConnected =>
-        _hubConnection.State == HubConnectionState.Connected;
+        HubConnection.State == HubConnectionState.Connected;
+
+    public void Dispose()
+    {
+        handler.Dispose();
+    }
 }
